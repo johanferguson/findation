@@ -1,0 +1,196 @@
+/* Ask FINDATION demo app, light theme. Same tokens and type system as the website. */
+
+:root {
+  --mint: #E4F6EA;
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --panel-w: 380px;
+
+  /* TYPE SYSTEM: Poppins only, weights 400 and 600, as on the website, but one step smaller
+     throughout because this is a working app screen, not a marketing page. */
+  --font: "Poppins", "Segoe UI", Arial, sans-serif;
+  --font-heading: var(--font);
+  --font-body: var(--font);
+  --fs-title: 1.625rem;                          /* 26px */
+  --fs-subhead: 0.9375rem;                       /* 15px semibold */
+  --fs-lead: 0.9375rem;                          /* 15px regular */
+  --fs-body: 0.875rem;                           /* 14px */
+  --fs-small: 0.75rem;                           /* 12px: notes; semibold for labels */
+}
+
+/* ---------- TYPE ---------- */
+body, button, input, .leaflet-container { font-family: var(--font); }
+body { font-size: var(--fs-body); font-weight: 400; line-height: 1.6; letter-spacing: 0; font-synthesis: none; }
+h1, strong, b { font-weight: 600; }
+
+/* Title */
+h1 { font-family: var(--font); font-size: var(--fs-title); font-weight: 600; line-height: 1.18; letter-spacing: -0.01em; text-wrap: balance; }
+
+/* Subhead (the zoom buttons need the override because the map library sets its own font) */
+.leaflet-bar a.leaflet-control-zoom-in, .leaflet-bar a.leaflet-control-zoom-out { font-family: var(--font) !important; font-size: var(--fs-subhead) !important; font-weight: 600 !important; }
+.info-title, .table-title { font-size: var(--fs-subhead); font-weight: 600; line-height: 1.35; }
+
+/* Lead */
+.lead { font-size: var(--fs-lead); font-weight: 400; line-height: 1.6; }
+
+/* Body (16px regular) is the default: messages, the question field and suggested questions. */
+.msg, .ask-row input, .prompt { font-size: var(--fs-body); font-weight: 400; line-height: 1.5; }
+
+/* Small */
+.msg-source, .info-line, .table-note, .values td, .legend li, .legend-note, .leaflet-container, .leaflet-container .leaflet-control-attribution { font-size: var(--fs-small); font-weight: 400; line-height: 1.5; }
+
+/* Label: small and semibold, sentence case */
+.demo-tag, .suggest-label, .facts li, .values th, .values td.val, .legend-title, .info-value, .place { font-size: var(--fs-small); font-weight: 600; line-height: 1.3; letter-spacing: 0; text-transform: none; }
+/* ---------- END TYPE ---------- */
+
+html, body { height: 100%; }
+body { overflow: hidden; background: var(--white); }
+[hidden] { display: none !important; }
+.accent { color: var(--green); }
+
+.app { display: grid; grid-template-columns: var(--panel-w) minmax(0, 1fr); height: 100vh; height: 100dvh; }
+
+/* Before the first answer there is no map: only the prompt, centred. */
+.app.no-map { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); }
+/* Until then the map is kept off screen at its real size, so it can be prepared out of sight. */
+.app.no-map .stage { position: fixed; top: 0; left: -300vw; width: calc(100vw - var(--panel-w)); height: 100dvh; animation: none; }
+.app.no-map .panel { grid-row: 1; width: 100%; max-width: 46rem; margin: 0 auto; border-right: 0; }
+/* The heading and the chat box sit together in the middle of the page until the conversation starts. */
+.app.no-map .panel-head { margin-bottom: auto; }
+.app.no-map .composer { margin-bottom: auto; }
+.app.no-map .thread:not(.has-messages) { flex: 0 0 auto; text-align: center; padding-bottom: 8px; }
+.app.no-map .thread:not(.has-messages) .intro { margin: 0; }
+.app.no-map .thread:not(.has-messages) .intro .lead { max-width: none; }
+.app.no-map .thread.has-messages + .composer { margin-bottom: 0; }
+.stage { animation: stage-in .6s var(--ease) backwards; }
+@keyframes stage-in { from { opacity: 0; } }
+
+/* ----- Conversation panel ----- */
+.panel { display: flex; flex-direction: column; min-height: 0; background: var(--white); color: var(--charcoal); border-right: 1px solid var(--grey-300); }
+.panel-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding: 20px 24px 0; }
+.panel-head .logo-plate { padding: 0; border-radius: 0; }
+.panel-head .logo-plate img { display: block; height: 34px; width: auto; }
+.demo-tag { background: var(--gold); color: var(--navy); padding: 6px 14px; border-radius: var(--radius-pill); }
+
+.thread { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 28px 24px 16px; scrollbar-width: thin; scrollbar-color: var(--grey-300) transparent; }
+.intro { margin: auto 0; padding-bottom: var(--space-5); }
+.thread.has-messages .intro { margin: 0; }
+.intro h1 { color: var(--navy); margin: 0 0 var(--space-3); }
+.intro .lead { margin: 0; max-width: 20rem; color: var(--grey-600); }
+
+.msg { max-width: 92%; padding: 11px 15px; animation: msg-in .45s var(--ease) backwards; }
+@keyframes msg-in { from { opacity: 0; translate: 0 12px; } }
+.msg p { margin: 0; }
+.msg-user { align-self: flex-end; background: var(--navy); color: var(--white); border-radius: 22px 22px 6px 22px; }
+.msg-bot { align-self: flex-start; background: var(--grey-100); color: var(--charcoal); border-radius: 22px 22px 22px 6px; }
+.facts { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0 0; padding: 0; }
+.facts li { background: var(--white); color: var(--navy); padding: 5px 12px; border-radius: var(--radius-pill); }
+.msg-source { margin-top: 10px !important; color: var(--grey-600); }
+.dots { display: inline-flex; gap: 5px; padding: 6px 0; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: dot 1.1s ease-in-out infinite; }
+.dots i:nth-child(2) { animation-delay: .15s; } .dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes dot { 0%, 60%, 100% { opacity: .3; translate: 0 0; } 30% { opacity: 1; translate: 0 -4px; } }
+
+.composer { padding: 8px 24px 24px; }
+.suggest { display: grid; gap: 8px; margin-bottom: 12px; }
+.suggest-label { margin: 0; color: var(--green-700); }
+.prompt { text-align: left; color: var(--navy); background: var(--mint); border: 0; border-radius: 16px; padding: 12px 16px; cursor: pointer; transition: background .15s, color .15s; }
+.choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.choices .prompt { text-align: center; font-weight: 600; }
+.prompt:hover, .prompt:focus-visible { background: var(--navy); color: var(--white); outline: none; }
+.ask-row { display: flex; gap: 8px; background: var(--grey-100); border-radius: var(--radius-pill); padding: 6px; }
+.ask-row:focus-within { outline: 3px solid var(--green-bright); outline-offset: 2px; }
+.ask-row input { flex: 1; min-width: 0; color: var(--charcoal); background: none; border: 0; padding: 8px 6px 8px 16px; }
+.ask-row input:focus { outline: none; }
+.send { flex: none; width: 38px; height: 38px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--green-bright); color: var(--navy); cursor: pointer; transition: background .15s; }
+.send:hover { background: var(--gold); }
+.send svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ----- Map: OpenStreetMap, with our layers on top ----- */
+.stage { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--grey-100); overflow: hidden; }
+.map-wrap { position: relative; flex: 1 1 0; min-height: 0; }
+.stage.table-only .map-wrap { display: none; }
+#map { position: absolute; inset: 0; background: var(--grey-100); outline: none; }
+.leaflet-container { color: var(--charcoal); }
+.leaflet-container .leaflet-control-attribution { background: rgba(255, 255, 255, .88); color: var(--grey-600); padding: 2px 10px; border-radius: 10px 0 0 0; }
+.leaflet-container .leaflet-control-attribution a { color: var(--navy); }
+.leaflet-bar { border: 1px solid var(--grey-300) !important; box-shadow: none !important; border-radius: 14px !important; overflow: hidden; }
+.leaflet-bar a { width: 40px !important; height: 40px !important; line-height: 38px !important; color: var(--navy) !important; border-bottom: 1px solid var(--grey-100) !important; }
+.leaflet-bar a:hover { background: var(--mint) !important; }
+.leaflet-bottom.leaflet-right .leaflet-control-zoom { margin: 0 16px 16px 0; }
+.leaflet-interactive:focus { outline: none; }
+
+/* Land parcels and the asked-about street (drawn by the map library as SVG paths) */
+path.parcel { transition: fill .7s var(--ease), fill-opacity .7s var(--ease), stroke .7s var(--ease); }
+path.parcel.is-new { animation: parcel-in .7s var(--ease) backwards; }
+@keyframes parcel-in { from { opacity: 0; } }
+path.street { animation: parcel-in .8s var(--ease) backwards; }
+
+/* Cards floating over the map: flat white blocks with a hairline edge */
+.card, .place { position: absolute; z-index: 500; background: var(--white); border: 1px solid var(--grey-300); animation: msg-in .45s var(--ease) backwards; }
+.card { color: var(--charcoal); border-radius: 22px; padding: 18px 20px; }
+.place { top: 16px; left: 16px; margin: 0; display: flex; align-items: center; gap: 8px; color: var(--navy); padding: 9px 16px 9px 12px; border-radius: var(--radius-pill); }
+.place svg { width: 16px; height: 20px; fill: var(--green-bright); flex: none; }
+.info { top: 16px; right: 16px; min-width: 230px; max-width: 290px; pointer-events: none; }
+.info-title { margin: 0; color: var(--navy); }
+.info-line { margin: 2px 0 0; color: var(--grey-600); }
+.info-value { display: inline-block; margin: 10px 0 0; background: var(--navy); color: var(--white); padding: 5px 12px; border-radius: var(--radius-pill); }
+.legend { left: 16px; bottom: 16px; }
+.legend-title { margin: 0 0 10px; color: var(--navy); }
+.legend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.legend li { display: flex; align-items: center; gap: 10px; }
+.legend i { flex: none; width: 30px; height: 18px; border-radius: 6px; }
+.legend-note { margin: 12px 0 0; max-width: 14rem; color: var(--grey-600); }
+
+/* With the table open the map is shorter, so the legend drops its note and tightens up. */
+.map-wrap:has(+ .table-wrap:not([hidden])) .legend { padding: 12px 16px; }
+.map-wrap:has(+ .table-wrap:not([hidden])) .legend ul { gap: 3px; }
+.map-wrap:has(+ .table-wrap:not([hidden])) .legend-note { display: none; }
+
+/* Table of property values: under the map, or filling the space when only the table is asked for */
+.table-wrap { flex: 0 0 42%; min-height: 0; display: flex; flex-direction: column; background: var(--white); border-top: 1px solid var(--grey-300); animation: msg-in .45s var(--ease) backwards; }
+.stage.table-only .table-wrap { flex: 1 1 0; border-top: 0; }
+.table-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: 14px 20px 10px; }
+.table-title { margin: 0; color: var(--navy); }
+.table-note { margin: 0 auto 0 0; color: var(--grey-600); }
+.table-head { align-items: center; }
+.download { display: inline-flex; align-items: center; gap: 6px; flex: none; background: var(--navy); color: var(--white); text-decoration: none; padding: 8px 16px 8px 12px; border-radius: var(--radius-pill); font-size: var(--fs-small); font-weight: 600; line-height: 1.3; transition: background .15s, color .15s; }
+.download:hover { background: var(--green-bright); color: var(--navy); }
+.download svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.table-scroll { flex: 1; min-height: 0; overflow: auto; }
+.values { width: 100%; border-collapse: collapse; }
+.values th { position: sticky; top: 0; z-index: 1; background: var(--grey-100); color: var(--navy); text-align: left; padding: 7px 20px; white-space: nowrap; }
+.values td { padding: 6px 20px; border-bottom: 1px solid var(--grey-100); white-space: nowrap; }
+.values .num { text-align: right; }
+.values tbody tr { cursor: pointer; }
+.values tbody tr:hover { background: var(--mint); }
+.values tbody tr.is-picked { background: var(--mint); }
+.values td i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 8px; vertical-align: -1px; }
+.values td.none { color: var(--grey-600); }
+
+/* ----- Narrow screens: map on top, conversation below ----- */
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); grid-template-rows: 46dvh minmax(0, 1fr); }
+  .stage { grid-row: 1; }
+  .panel { grid-row: 2; border-right: 0; }
+  .app.no-map .stage { width: 100vw; height: 46dvh; }
+  .values th, .values td { padding-left: 12px; padding-right: 12px; }
+  .table-head { padding: 10px 12px 8px; }
+  .panel-head { padding: 12px 16px 0; }
+  .panel-head .logo-plate img { height: 30px; }
+  .thread { padding: 16px 16px 8px; }
+  .intro { margin: 0; padding-bottom: var(--space-2); }
+  .composer { padding: 8px 16px 16px; }
+  .card { padding: 12px 14px; border-radius: 16px; }
+  .info { top: 10px; right: 10px; min-width: 0; max-width: 62%; }
+  .place, .leaflet-control-zoom { display: none; }
+  .legend { left: 10px; right: 10px; bottom: 28px; }
+  .legend-title { margin-bottom: 6px; }
+  .legend ul { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px 8px; }
+  .legend li { gap: 6px; }
+  .legend i { width: 16px; height: 16px; border-radius: 5px; }
+  .legend-note { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .msg, .card, .place, path.parcel.is-new, path.street { animation: none; }
+}

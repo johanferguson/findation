@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ask FINDATION · Demo</title>
+  <meta name="description" content="Ask FINDATION a question about an area in South Africa and see the answer on the map.">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap">
+  <link rel="stylesheet" href="assets/vendor/leaflet.css">
+  <link rel="stylesheet" href="assets/tokens.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="app no-map" id="app">
+
+    <!-- Conversation panel -->
+    <aside class="panel" aria-label="Ask FINDATION">
+      <header class="panel-head">
+        <a class="logo-plate" href="index.html" aria-label="FINDATION website">
+          <img src="assets/findation-wordmark-640.png" alt="FINDATION" width="640" height="152">
+        </a>
+        <span class="demo-tag">Demo</span>
+      </header>
+
+      <div class="thread" id="thread" aria-live="polite">
+        <div class="intro">
+          <h1>Ask <span class="accent">FINDATION</span></h1>
+          <p class="lead">Ask about any area in South Africa and see the answer on the map.</p>
+        </div>
+      </div>
+
+      <div class="composer">
+        <div class="suggest" id="suggest"></div>
+        <form class="ask-row" id="ask-form" autocomplete="off">
+          <input id="ask-input" name="q" type="text" aria-label="Your question" placeholder="Ask about any area">
+          <button type="submit" class="send" aria-label="Ask">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <!-- Map -->
+    <main class="stage" id="stage">
+     <div class="map-wrap">
+      <div id="map" role="application" aria-label="Map"></div>
+
+      <p class="place" id="place" hidden>
+        <svg viewBox="-17 -43 34 45" aria-hidden="true"><path d="M0 0c-9-11-15-18-15-26a15 15 0 0130 0c0 8-6 15-15 26z"/></svg>
+        Thomas Edison Street · Menlo Park, Pretoria
+      </p>
+
+      <div class="card info" id="info" hidden>
+        <p class="info-title" id="info-title"></p>
+        <p class="info-line" id="info-line"></p>
+        <p class="info-value" id="info-value" hidden></p>
+      </div>
+
+      <div class="card legend" id="legend" hidden>
+        <p class="legend-title">Estimated property value</p>
+        <ul id="legend-list"></ul>
+        <p class="legend-note">Illustrative figures based on each parcel's area.</p>
+      </div>
+     </div>
+
+      <!-- Table of property values, opened on request -->
+      <section class="table-wrap" id="table-wrap" aria-label="Estimated property values" hidden>
+        <header class="table-head">
+          <p class="table-title">Estimated property values</p>
+          <p class="table-note" id="table-note"></p>
+          <a class="download" href="assets/menlo-park-property-values.xlsx" download="FINDATION property values - Menlo Park.xlsx">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 11l5 5 5-5M5 20h14"/></svg>Download Excel
+          </a>
+        </header>
+        <div class="table-scroll">
+          <table class="values">
+            <thead><tr><th scope="col">Erf</th><th scope="col">Township</th><th scope="col" class="num">Area</th><th scope="col">Status</th><th scope="col" class="num">Estimated value</th></tr></thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <script src="assets/vendor/leaflet.js"></script>
+  <script src="assets/demo-menlo-park.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
