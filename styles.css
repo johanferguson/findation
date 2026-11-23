@@ -35,7 +35,7 @@ h2 { font-size: var(--fs-title); line-height: 1.18; }
 .hero h1, .hero h2 { font-size: var(--fs-display); line-height: 1.12; }
 
 /* Heading */
-h3 { font-family: var(--font); font-size: var(--fs-heading); font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
+h3, .quest-text { font-family: var(--font); font-size: var(--fs-heading); font-weight: 600; line-height: 1.25; letter-spacing: -0.01em; }
 
 /* Subhead */
 .snap strong, .poster-foot strong { font-family: var(--font); font-size: var(--fs-subhead); font-weight: 600; line-height: 1.35; letter-spacing: 0; }
@@ -186,6 +186,12 @@ h2 { margin-bottom: var(--space-5); }
 .poster-farm .poster-foot { background: var(--navy); color: var(--on-navy); }
 .poster-farm .btn-go:hover { background: var(--white); }
 
+/* Quest invitation: a bright block under the two programmes; the whole block is the link */
+.quest { display: flex; align-items: center; gap: clamp(16px, 3vw, 36px); margin-top: clamp(20px, 2.4vw, 32px); padding: clamp(20px, 2.6vw, 32px) clamp(24px, 3vw, 40px); background: var(--green-bright); color: var(--navy); border-radius: var(--r-poster); text-decoration: none; }
+.quest-art { flex: none; width: clamp(84px, 10vw, 132px); height: auto; animation: f-bob .8s ease-in-out infinite alternate; }
+.quest-text { flex: 1; color: var(--navy); }
+.quest:hover .btn-dark { background: var(--white); color: var(--navy); }
+
 /* Join form: slides in from the right over its poster and fills the same space */
 .poster { position: relative; }
 .poster-join { position: absolute; inset: -1px; z-index: 2; display: flex; flex-direction: column; align-items: flex-start; padding: clamp(24px, 3vw, 40px); background: var(--mint); color: var(--charcoal); overflow-y: auto; translate: 100% 0; visibility: hidden; transition: translate .5s var(--ease), visibility 0s linear .5s; }
@@ -282,7 +288,9 @@ h2 { margin-bottom: var(--space-5); }
 @media (max-width: 620px) {
   .container { padding: 0 var(--space-4); }
   .brand img { height: 38px; }
-  .slide .btn, .poster-foot .btn { width: 100%; }
+  .slide .btn, .poster-foot .btn, .quest .btn { width: 100%; }
+  .quest { flex-wrap: wrap; }
+  .quest-text { flex: 1 1 60%; }
   .snap { grid-template-columns: minmax(0, 1fr); }
   .snap li { display: grid; grid-template-columns: 26px 1fr; column-gap: 12px; align-items: start; }
   .snap svg { grid-row: span 2; margin: 2px 0 0; }
