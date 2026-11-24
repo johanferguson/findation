@@ -52,7 +52,7 @@
 
       <p class="place" id="place" hidden>
         <svg viewBox="-17 -43 34 45" aria-hidden="true"><path d="M0 0c-9-11-15-18-15-26a15 15 0 0130 0c0 8-6 15-15 26z"/></svg>
-        Thomas Edison Street · Menlo Park, Pretoria
+        <span id="place-text">Thomas Edison Street · Menlo Park, Pretoria</span>
       </p>
 
       <div class="card info" id="info" hidden>
@@ -62,9 +62,9 @@
       </div>
 
       <div class="card legend" id="legend" hidden>
-        <p class="legend-title">Estimated property value</p>
+        <p class="legend-title" id="legend-title">Estimated property value</p>
         <ul id="legend-list"></ul>
-        <p class="legend-note">Illustrative figures based on each parcel's area.</p>
+        <p class="legend-note" id="legend-note">Illustrative figures based on each parcel's area.</p>
       </div>
      </div>
 
@@ -90,6 +90,8 @@
 
   <script src="assets/vendor/leaflet.js"></script>
   <script src="assets/demo-menlo-park.js"></script>
+  <script src="assets/demo-noll.js"></script>
+  <script src="assets/demo-spaza.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
